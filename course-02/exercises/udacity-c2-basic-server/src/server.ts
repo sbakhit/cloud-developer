@@ -81,7 +81,7 @@ import { Car, cars as cars_list, isCar } from './cars';
     }
 
     return res.status(400)
-                .send(cars);
+                .send(retrieved_cars);
   } );
 
   // @TODO Add an endpoint to get a specific car
