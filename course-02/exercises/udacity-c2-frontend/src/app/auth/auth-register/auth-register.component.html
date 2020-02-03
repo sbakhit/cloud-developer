@@ -15,11 +15,10 @@
       <ion-label position="floating" color="primary">Confirm Password</ion-label>
       <ion-input type="password" formControlName="password_confirm" required></ion-input>
     </ion-item>
-    <ion-button 
-      color="primary" 
+    <ion-button
+      color="primary"
       type="submit"
       [disabled]="!registerForm.valid ">
       Register
     </ion-button> {{error}}
   </form>
-  
