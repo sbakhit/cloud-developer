@@ -1,7 +1,7 @@
 import express, { Router, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 
-import { Car, cars as cars_list } from './cars';
+import { Car, cars as cars_list, isCar } from './cars';
 
 (async () => {
   let cars:Car[]  = cars_list;
@@ -70,13 +70,56 @@ import { Car, cars as cars_list } from './cars';
 
   // @TODO Add an endpoint to GET a list of cars
   // it should be filterable by make with a query paramater
+  app.get( "/cars/", ( req: Request, res: Response ) => {
+    let { make } = req.query;
+
+    let retrieved_cars: Car[] = cars;
+    if ( make ) {
+      retrieved_cars = cars.filter(car => car.make === make);
+      return res.status(200)
+                .send(retrieved_cars);
+    }
+
+    return res.status(400)
+                .send(cars);
+  } );
 
   // @TODO Add an endpoint to get a specific car
   // it should require id
   // it should fail gracefully if no matching car is found
+  app.get( "/cars/:id", ( req: Request, res: Response ) => {
+    let { id } = req.params;
+
+    if ( isNaN(Number(id)) ) {
+      return res.status(400)
+                .send(`id is required and must be a number`);
+    }
+
+    const retrieved_car: Car = cars.find(car => car.id === Number(id));
+    if ( !retrieved_car ) {
+      return res.status(404)
+              .send(`car with id ${id} not found`);
+    }
+
+    return res.status(200)
+              .send(retrieved_car);
+  } );
 
   /// @TODO Add an endpoint to post a new car to our list
   // it should require id, type, model, and cost
+  app.post( "/cars/", (req: Request, res: Response) => {
+    let { make, type, model, cost, id } = req.body;
+    const newCar: Car = {make, type, model, cost, id};
+
+    if ( !isCar(newCar) ) {
+      return res.status(400)
+                .send(`car is required with make, type, model, cost, id`);
+    }
+
+    cars_list.push(newCar);
+    return res.status(201)
+              .send(newCar);
+  } );
 
   // Start the Server
   app.listen( port, () => {
