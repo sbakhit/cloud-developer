@@ -33,6 +33,9 @@ router.patch('/:id',
     requireAuth, async (req: Request, res: Response) => {
         //@TODO try it yourself
         let { id } = req.params;
+        if( !id ) {
+            res.status(400).send({message: 'id required'});
+        }
         const caption = req.body.caption;
         const fileName = req.body.url
 
@@ -47,7 +50,9 @@ router.patch('/:id',
         if( fileName ) {
             item.url = fileName;
         }
-        const updatedItem = await item.save();
+        let updatedItem = await item.save();
+
+        updatedItem.url = AWS.getGetSignedUrl(updatedItem.url);
         res.status(201).send(updatedItem);
 });
 
